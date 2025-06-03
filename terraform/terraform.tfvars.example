@@ -1,0 +1,4 @@
+# Example values for Terraform variables
+key_name = "chaitanya-key"
+ami      = "ami-0e35ddab05955cf57"
+# Copy this file to terraform.tfvars and fill in your real values (do not commit secrets)

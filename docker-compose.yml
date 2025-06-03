@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    context: .
+    dockerfile: Dockerfile
+    command: gunicorn shipment_project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./shipment_project:/app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  frontend:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: shipment_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
