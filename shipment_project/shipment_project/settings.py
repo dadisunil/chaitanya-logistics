@@ -45,11 +45,6 @@ INSTALLED_APPS = [
 
 ]
 
-# Add CORS headers configuration
-INSTALLED_APPS += [
-    'corsheaders',
-]
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Ensure this is the first middleware
     'django.middleware.security.SecurityMiddleware',
