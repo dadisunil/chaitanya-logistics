@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shipments',
+    'corsheaders',
     'rest_framework',  # For Django REST Framework
 
 ]
@@ -146,7 +147,10 @@ AUTH_USER_MODEL = 'shipments.CustomUser'
 
 # Configure CORS allowed origins
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Frontend URL
+    "http://localhost:5173",
+    "http://13.233.20.88"
+    "http://chaitanyalogistics.com"        # Frontend URL
+    "https://chaitanyalogistics.com" 
 ]
 
 # Allow credentials in CORS requests
