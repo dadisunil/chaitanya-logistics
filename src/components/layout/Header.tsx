@@ -64,7 +64,7 @@ const Header: React.FC = () => {
 {/*           <Truck className="text-primary-600 h-8 w-8" />
             <span className="text-xl font-bold text-primary-950">LogiTrack</span>
 */}
-            <img src="/src/images/ck_logo.png" alt="Logo" className="h-8 w-24" />
+            <img src="/ck_logo.png" alt="Logo" className="h-8 w-24" />
             <span className="text-xl font-bold text-primary-950">Chaitanya Logistics</span>
           </Link>
           

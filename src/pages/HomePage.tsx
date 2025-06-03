@@ -105,25 +105,13 @@ const HomePage: React.FC = () => {
                 className="h-96 w-full"
               >
                 <SwiperSlide>
-                  <img
-                    src="/src/images/warehouse.webp"
-                    alt="Logo"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="/warehouse.webp" alt="Logo" className="w-full h-full object-cover" />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img
-                    src="/src/images/hero.jpg"
-                    alt="Hero Image"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="/hero.jpg" alt="Hero Image" className="w-full h-full object-cover" />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img
-                    src="/src/images/chaitanya.png"
-                    alt="Logistics operations"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="/chaitanya.PNG" alt="Logistics operations" className="w-full h-full object-cover" />
                 </SwiperSlide>
                 <SwiperSlide>
                   <img
@@ -133,11 +121,7 @@ const HomePage: React.FC = () => {
                   />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img
-                    src="/src/images/package.jpg"
-                    alt="Warehouse"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="/package.jpg" alt="Warehouse" className="w-full h-full object-cover" />
                 </SwiperSlide>
               </Swiper>
 
