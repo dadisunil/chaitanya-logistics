@@ -3,9 +3,9 @@ services:
   backend:
     build:
       context: ./shipment_project
-    command: gunicorn shipment_project.wsgi:application --bind 0.0.0.0:8000
     env_file:
-      - .env
+      - ./shipment_project/.env
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     depends_on:
@@ -13,6 +13,8 @@ services:
   frontend:
     build:
       context: ./src
+    env_file:
+      - ./src/.env
     ports:
       - "80:80"
     depends_on:
@@ -20,9 +22,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: shipment_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME:-shipment_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     volumes:
       - pgdata:/var/lib/postgresql/data
 volumes:

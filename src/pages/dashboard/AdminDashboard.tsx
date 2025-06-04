@@ -18,6 +18,8 @@ import {
 import DatePicker from 'react-datepicker'; // Corrected import for DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import datepicker styles
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const [shipments, setShipments] = useState<any[]>([]); // State for fetched shipment data
@@ -297,9 +299,8 @@ const AdminDashboard: React.FC = () => {
     setUpdating(shipmentId);
     try {
       await axios.post(
-        'http://127.0.0.1:8000/api/update-shipment-status/',
+        `${API_BASE_URL}/api/update-shipment-status/`,
         { lr_no: shipmentId, status: statusUpdates[shipmentId] }
-        // No credentials or headers for this endpoint
       );
       fetchShipments(); // Refresh data
     } catch (error: any) {

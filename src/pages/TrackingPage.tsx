@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Package, TruckIcon, CheckCircle, AlertCircle, Calendar, Clock, MapPin } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 // TrackingPage Component
 const TrackingPage: React.FC = () => {
   const [trackingNumber, setTrackingNumber] = useState('');
@@ -21,7 +23,7 @@ const TrackingPage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/track_shipment/', {
+      const response = await fetch(`${API_BASE_URL}/api/track_shipment/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

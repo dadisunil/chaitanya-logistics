@@ -55,10 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [token]);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/login', { email, password });
+      const response = await axios.post(`${API_BASE_URL}/api/login`, { email, password });
       // Expecting response.data to have { user, access }
       const { user, access } = response.data;
       setUser(user);
@@ -75,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, password: string) => {
     setLoading(true);
     try {
-      await axios.post('http://127.0.0.1:8000/api/register', { name, email, password });
+      await axios.post(`${API_BASE_URL}/api/register`, { name, email, password });
     } catch (error) {
       throw new Error('Registration failed.');
     } finally {

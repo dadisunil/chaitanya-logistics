@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = 'django-insecure-2bs68hq6l1!u=xo2ye*w@85w-oxljggodp-n)v%d4k(5*8f39u'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 # Add localhost and 127.0.0.1 to ALLOWED_HOSTS
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','13.233.20.88','172.31.3.3','chaitanyalogistics.com','www.chaitanyalogistics.com']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -88,11 +88,11 @@ WSGI_APPLICATION = 'shipment_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shipment_db',  # Replace with your database name
-        'USER': 'postgres',     # Replace with your PostgreSQL username
-        'PASSWORD': 'postgres', # Replace with your PostgreSQL password
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'shipment_db'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -141,12 +141,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'shipments.CustomUser'
 
 # Configure CORS allowed origins
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://13.233.20.88"
-    "http://chaitanyalogistics.com"        # Frontend URL
-    "https://chaitanyalogistics.com" 
-]
+CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS', 'http://localhost').split(',')
 
 # Allow credentials in CORS requests
 CORS_ALLOW_CREDENTIALS = True

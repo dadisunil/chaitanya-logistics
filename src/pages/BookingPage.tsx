@@ -130,7 +130,7 @@ const BookingPage: React.FC = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  const API_BASE_URL = 'http://127.0.0.1:8000'; // Update this to match your backend server URL
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   // Update the handleSubmitWithAPI function to display the new booking reference
   const handleSubmitWithAPI = async (e: React.FormEvent) => {

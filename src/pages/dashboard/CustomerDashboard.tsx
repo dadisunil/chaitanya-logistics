@@ -7,6 +7,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Modal from 'react-modal';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subWeeks, subMonths, subYears } from 'date-fns';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 // Error Boundary Component
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -71,8 +73,7 @@ const CustomerDashboard: React.FC = () => {
     const fetchCustomerShipments = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('/api/customer-shipments/', {
-          baseURL: 'http://127.0.0.1:8000',
+        const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
@@ -117,8 +118,7 @@ const CustomerDashboard: React.FC = () => {
     }
     setLoading(true);
     try {
-      const response = await axios.get('/api/export-customer-shipments-csv/', {
-        baseURL: 'http://127.0.0.1:8000',
+      const response = await axios.get(`${API_BASE_URL}/api/export-customer-shipments-csv/`, {
         withCredentials: true,
         headers: {
           'Content-Type': 'text/csv',
@@ -153,8 +153,7 @@ const CustomerDashboard: React.FC = () => {
     setLoading(true);
     setTimeout(async () => {
       try {
-        const response = await axios.get('/api/customer-shipments/', {
-          baseURL: 'http://127.0.0.1:8000',
+        const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
@@ -190,8 +189,7 @@ const CustomerDashboard: React.FC = () => {
     setDateRange([null, null]);
     setLoading(true);
     try {
-      const response = await axios.get('/api/customer-shipments/', {
-        baseURL: 'http://127.0.0.1:8000',
+      const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -220,8 +218,7 @@ const CustomerDashboard: React.FC = () => {
   // Fetch booking details by LR No
   const fetchBookingByLRNo = async (lrNo: string) => {
     try {
-      const response = await axios.get(`/api/customer-shipments/`, {
-        baseURL: 'http://127.0.0.1:8000',
+      const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -271,12 +268,11 @@ const CustomerDashboard: React.FC = () => {
     setUpdating(shipmentId);
     try {
       await axios.post(
-        'http://127.0.0.1:8000/api/update-shipment-status/',
+        `${API_BASE_URL}/api/update-shipment-status/`,
         { lr_no: shipmentId, status: statusUpdates[shipmentId] }
       );
       // Refresh shipments after update
-      const response = await axios.get('/api/customer-shipments/', {
-        baseURL: 'http://127.0.0.1:8000',
+      const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' },
         params: {
@@ -918,8 +914,7 @@ const CustomerDashboard: React.FC = () => {
           <button
             onClick={async () => {
               try {
-                const response = await axios.get('/api/export-all-customer-shipments-csv/', {
-                  baseURL: 'http://127.0.0.1:8000',
+                const response = await axios.get(`${API_BASE_URL}/api/export-all-customer-shipments-csv/`, {
                   withCredentials: true,
                   headers: {
                     'Content-Type': 'text/csv',
