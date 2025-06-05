@@ -17,8 +17,7 @@ import {
 } from 'lucide-react';
 import DatePicker from 'react-datepicker'; // Corrected import for DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import datepicker styles
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from '../../config';
 
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();

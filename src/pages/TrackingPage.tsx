@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Package, TruckIcon, CheckCircle, AlertCircle, Calendar, Clock, MapPin } from 'lucide-react';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from '../config';
 
 // TrackingPage Component
 const TrackingPage: React.FC = () => {

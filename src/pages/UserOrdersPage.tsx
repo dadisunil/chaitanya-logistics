@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const UserOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -9,7 +10,7 @@ const UserOrdersPage: React.FC = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('logitrack_token');
-        const response = await axios.get('http://127.0.0.1:8000/api/user-bookings/', {
+        const response = await axios.get(`${API_BASE_URL}/api/user-bookings/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOrders(response.data);

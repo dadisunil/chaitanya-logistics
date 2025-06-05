@@ -557,10 +557,8 @@ def insert_booking_from_block(request):
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-@csrf_exempt
 @api_view(['POST'])
 def update_shipment_status(request):
-    # Allow both Agent group and admin/staff users (removed authentication check)
     try:
         data = json.loads(request.body)
         lr_no = data.get('lr_no')

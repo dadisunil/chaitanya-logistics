@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 // Define types
 type User = {
@@ -54,8 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       axios.interceptors.request.eject(requestInterceptor);
     };
   }, [token]);
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const login = async (email: string, password: string) => {
     setLoading(true);
