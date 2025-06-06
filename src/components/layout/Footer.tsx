@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
 {/*              <Truck className="text-white h-6 w-6" />
               <span className="text-xl font-bold text-white">LogiTrack</span>
 */}
-              <img src="/src/images/ck_logo.png" alt="Logo" className="h-8 w-24" />
+              <img src="/ck_logo.png" alt="Logo" className="h-8 w-24" />
               <span className="text-xl font-bold text-primary-950">Chaitanya Logistics</span>
               </div>
             <p className="text-sm mb-4">
