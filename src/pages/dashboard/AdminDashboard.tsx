@@ -39,7 +39,7 @@ const AdminDashboard: React.FC = () => {
   // Fetch shipment data from the backend
   const fetchShipments = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/shipments/');
+      const response = await axios.get(`${API_BASE_URL}/api/shipments/`);
       setShipments(response.data); // Set the fetched data to state
     } catch (error) {
       console.error('Error fetching shipment data:', error);
@@ -188,7 +188,7 @@ const AdminDashboard: React.FC = () => {
   // Handle filter
   const handleFilter = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/shipments/', {
+      const response = await axios.get(`${API_BASE_URL}/api/shipments/`, {
         params: {
           start_date: startDate?.toISOString(),
           end_date: endDate?.toISOString(),

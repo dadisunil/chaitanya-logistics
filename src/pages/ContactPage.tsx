@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const ContactPage: React.FC = () => {
     setStatus('loading');
     setStatusMsg("");
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/contact/', formData);
+      const res = await axios.post(`${API_BASE_URL}/api/contact/`, formData);
       setStatus('success');
       setStatusMsg("Thank you for contacting us! We have received your message and will get back to you soon.");
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
