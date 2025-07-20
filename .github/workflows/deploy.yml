@@ -10,14 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-       - name: Upload .env files to EC2
-         uses: appleboy/scp-action@v0.1.7
-         with:
-           host: ${{ secrets.EC2_HOST }}
-           username: ubuntu
-           key: ${{ secrets.EC2_SSH_KEY }}
-           source: "src/.env,shipment_project/.env"
-           target: "/home/ubuntu/app"
+      - name: Upload .env files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "src/.env,shipment_project/.env"
+          target: "/home/ubuntu/app"
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
