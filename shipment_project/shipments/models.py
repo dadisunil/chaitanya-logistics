@@ -78,8 +78,8 @@ class Booking(models.Model):
     consignor = models.CharField(max_length=50, blank=True, null=True)
     consignee = models.CharField(max_length=50, blank=True, null=True)
     saidtocontain = models.CharField(max_length=50, blank=True, null=True)
-    pickup_address = models.TextField(blank=True, null=True)
-    delivery_address = models.TextField(blank=True, null=True)
+    pickup_address = models.JSONField(blank=True, null=True)
+    delivery_address = models.JSONField(blank=True, null=True)
     service_type = models.CharField(max_length=50, blank=True, null=True)
     package_type = models.CharField(max_length=50, blank=True, null=True)
     weight = models.FloatField(blank=True, null=True)
@@ -91,6 +91,7 @@ class Booking(models.Model):
     status = models.CharField(max_length=50, default='in-transit')
     updates = models.JSONField(default=list)
     phone = models.CharField(max_length=15, blank=True, null=True)  # Add phone field to Booking model
+    delivery_email = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
 
     def save(self, *args, **kwargs):
@@ -101,32 +102,6 @@ class Booking(models.Model):
             last_booking = Booking.objects.order_by('-id').first()
             last_lr_no = int(last_booking.lr_no) if last_booking and last_booking.lr_no else 0
             self.lr_no = str(last_lr_no + 1)  # Store only the numeric part
-
-        # Safely extract city from pickup and delivery addresses
-        try:
-            self.from_location = self.pickup_address.split(',')[4].strip() if self.pickup_address else ''
-        except IndexError:
-            self.from_location = ''
-            logger.warning("pickup_address does not have enough components to extract from_location")
-
-        try:
-            self.to_location = self.delivery_address.split(',')[4].strip() if self.delivery_address else ''
-        except IndexError:
-            self.to_location = ''
-            logger.warning("delivery_address does not have enough components to extract to_location")
-
-        # Safely extract phone numbers from pickup and delivery addresses
-        try:
-            self.branch_from_phone = self.pickup_address.split(',')[7].strip() if self.pickup_address else ''
-        except IndexError:
-            self.branch_from_phone = ''
-            logger.warning("pickup_address does not have enough components to extract branch_from_phone")
-
-        try:
-            self.branch_to_phone = self.delivery_address.split(',')[7].strip() if self.delivery_address else ''
-        except IndexError:
-            self.branch_to_phone = ''
-            logger.warning("delivery_address does not have enough components to extract branch_to_phone")
 
         # Input weight into actual_weight
         self.actual_weight = self.weight

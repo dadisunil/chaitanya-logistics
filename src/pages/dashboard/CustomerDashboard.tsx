@@ -5,7 +5,7 @@ import { Package, Clock, CheckCircle, Download, Filter, RefreshCcw, XCircle, Loa
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Modal from 'react-modal';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subWeeks, subMonths, subYears } from 'date-fns';
+import { startOfDay, endOfWeek, startOfMonth, startOfYear,startOfWeek,endOfMonth, endOfYear, subDays, subWeeks, subMonths, subYears, endOfDay } from 'date-fns';
 import { API_BASE_URL } from '../../config';
 
 // Error Boundary Component
@@ -67,6 +67,39 @@ const CustomerDashboard: React.FC = () => {
 
   // Loading state
   const [loading, setLoading] = useState(false);
+
+  // Fetch all filtered shipments for accurate counts
+  useEffect(() => {
+    const fetchAllFilteredShipments = async () => {
+      try {
+        const params: any = {};
+        if (startDate && endDate) {
+          params.start_date = startDate.toISOString().split('T')[0];
+          params.end_date = endDate.toISOString().split('T')[0];
+        }
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+        // Fetch a large number of records for counts
+        params.page = 1;
+        params.page_size = 10000;
+        const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' },
+          params,
+        });
+        if (Array.isArray(response.data.results)) {
+          setAllFilteredShipments(response.data.results);
+        } else {
+          setAllFilteredShipments([]);
+        }
+      } catch (error) {
+        setAllFilteredShipments([]);
+      }
+    };
+    fetchAllFilteredShipments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate, searchTerm]);
 
   useEffect(() => {
     const fetchCustomerShipments = async () => {
@@ -240,8 +273,8 @@ const CustomerDashboard: React.FC = () => {
         <p><strong>Status:</strong> ${receiptData.status}</p>
         <p><strong>Origin:</strong> ${receiptData.origin}</p>
         <p><strong>Destination:</strong> ${receiptData.destination}</p>
-        <p><strong>Booking Date:</strong> ${receiptData.createdAt ? new Date(receiptData.createdAt).toLocaleDateString() : ''}</p>
-        <p><strong>Estimated Delivery:</strong> ${receiptData.estimatedDelivery ? new Date(receiptData.estimatedDelivery).toLocaleDateString() : ''}</p>
+        <p><strong>Booking Date:</strong> ${receiptData.booking_date ? new Date(receiptData.booking_date).toLocaleDateString() : ''}</p>
+        <p><strong>Estimated Delivery:</strong> ${receiptData.estimated_delivery ? new Date(receiptData.estimated_delivery).toLocaleDateString() : ''}</p>
         <p><strong>Service:</strong> ${receiptData.service}</p>
         <p><strong>Branch From Phone:</strong> ${receiptData.branch_from_phone}</p>
         <p><strong>Branch To Phone:</strong> ${receiptData.branch_to_phone}</p>
@@ -267,8 +300,10 @@ const CustomerDashboard: React.FC = () => {
     setUpdating(shipmentId);
     try {
       await axios.post(
-        `${API_BASE_URL}/api/update-shipment-status/`,
-        { lr_no: shipmentId, status: statusUpdates[shipmentId] }
+ //       `${API_BASE_URL}/api/update-shipment-status/`,
+          `http://127.0.0.1:8000/api/update-shipment-status/`,
+           { lr_no: shipmentId, status: statusUpdates[shipmentId] }
+ //       { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );
       // Refresh shipments after update
       const response = await axios.get(`${API_BASE_URL}/api/customer-shipments/`, {
@@ -295,19 +330,6 @@ const CustomerDashboard: React.FC = () => {
   // Shipments Tab
   const renderShipmentsTab = () => {
     const shipmentCount = Array.isArray(shipments) ? shipments.length : 0;
-
-    // Filtered shipments based on search
-    const filteredShipments = shipments.filter((shipment) => {
-      if (!searchTerm) return true;
-      const term = searchTerm.toLowerCase();
-      return (
-        (shipment.id && shipment.id.toLowerCase().includes(term)) ||
-        (shipment.status && shipment.status.toLowerCase().includes(term)) ||
-        (shipment.origin && shipment.origin.toLowerCase().includes(term)) ||
-        (shipment.destination && shipment.destination.toLowerCase().includes(term)) ||
-        (shipment.service && shipment.service.toLowerCase().includes(term))
-      );
-    });
 
     // Sorting logic
     const sortedShipments = React.useMemo(() => {
@@ -440,8 +462,8 @@ const CustomerDashboard: React.FC = () => {
                   { key: 'status', label: 'Status' },
                   { key: 'origin', label: 'Origin' },
                   { key: 'destination', label: 'Destination' },
-                  { key: 'createdAt', label: 'Booking Date' },
-                  { key: 'estimatedDelivery', label: 'Est. Delivery' },
+                  { key: 'booking_date', label: 'Booking Date' },
+                  { key: 'estimated_delivery', label: 'Est. Delivery' },
                   { key: 'service', label: 'Service' },
                   { key: 'branch_from_phone', label: 'Branch From Phone' },
                   { key: 'branch_to_phone', label: 'Branch To Phone' },
@@ -478,19 +500,19 @@ const CustomerDashboard: React.FC = () => {
                     <div className="text-sm text-gray-900">{shipment.status}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900" title={shipment.origin}>{shipment.origin}</div>
+                    <div className="text-sm text-gray-900" title={shipment.from_location || shipment.origin}>{shipment.from_location || shipment.origin}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900" title={shipment.destination}>{shipment.destination}</div>
+                    <div className="text-sm text-gray-900" title={shipment.to_location || shipment.destination}>{shipment.to_location || shipment.destination}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(shipment.createdAt)}
+                    {shipment.booking_date ? formatDate(shipment.booking_date) : ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(shipment.estimatedDelivery)}
+                    {shipment.estimated_delivery ? formatDate(shipment.estimated_delivery) : ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {shipment.service}
+                    {shipment.service_type || shipment.service || ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {shipment.branch_from_phone}
@@ -772,10 +794,32 @@ const CustomerDashboard: React.FC = () => {
     );
   };
   
-  // Dashboard Stats (dynamic counts)
-  const activeCount = shipments.filter(s => s.status === 'in-transit').length;
-  const deliveredCount = shipments.filter(s => s.status === 'delivered').length;
-  const pendingCount = shipments.filter(s => s.status === 'pending').length;
+  // Filtered shipments for current page
+  const filteredShipments = shipments.filter((shipment) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (shipment.id && String(shipment.id).toLowerCase().includes(term)) ||
+      (shipment.status && shipment.status.toLowerCase().includes(term)) ||
+      (shipment.origin && shipment.origin.toLowerCase().includes(term)) ||
+      (shipment.destination && shipment.destination.toLowerCase().includes(term)) ||
+      (shipment.service && shipment.service.toLowerCase().includes(term))
+    );
+  });
+  
+  // Dashboard Stats (dynamic counts from allFilteredShipments)
+  const [allFilteredShipments, setAllFilteredShipments] = useState<any[]>([]);
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const isInCurrentMonth = (dateString: string) => {
+    if (!dateString) return false;
+    const d = new Date(dateString);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  };
+  const activeCount = allFilteredShipments.filter(s => s.status === 'in-transit' && isInCurrentMonth(s.booking_date)).length;
+  const deliveredCount = allFilteredShipments.filter(s => s.status === 'delivered' && isInCurrentMonth(s.booking_date)).length;
+  const pendingCount = allFilteredShipments.filter(s => s.status === 'pending' && isInCurrentMonth(s.booking_date)).length;
   
   // Quick date range options
   const quickRanges = [
@@ -959,8 +1003,8 @@ const CustomerDashboard: React.FC = () => {
                 <p><strong>Status:</strong> {receiptData.status}</p>
                 <p><strong>Origin:</strong> {receiptData.origin}</p>
                 <p><strong>Destination:</strong> {receiptData.destination}</p>
-                <p><strong>Booking Date:</strong> {receiptData.createdAt ? new Date(receiptData.createdAt).toLocaleDateString() : ''}</p>
-                <p><strong>Estimated Delivery:</strong> {receiptData.estimatedDelivery ? new Date(receiptData.estimatedDelivery).toLocaleDateString() : ''}</p>
+                <p><strong>Booking Date:</strong> {receiptData.booking_date ? new Date(receiptData.booking_date).toLocaleDateString() : ''}</p>
+                <p><strong>Estimated Delivery:</strong> {receiptData.estimated_delivery ? new Date(receiptData.estimated_delivery).toLocaleDateString() : ''}</p>
                 <p><strong>Service:</strong> {receiptData.service}</p>
                 <p><strong>Branch From Phone:</strong> {receiptData.branch_from_phone}</p>
                 <p><strong>Branch To Phone:</strong> {receiptData.branch_to_phone}</p>

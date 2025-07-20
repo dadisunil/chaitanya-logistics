@@ -54,7 +54,15 @@ const HomePage: React.FC = () => {
                     animation: 'slideInFlash 1.2s cubic-bezier(0.4,0,0.2,1)',
                   }}
                 >
-                  <h1 className="text-4xl md:text-5xl font-bold leading-tight bg-gradient-to-r from-accent-500 via-primary-400 to-accent-600 bg-clip-text text-transparent drop-shadow-lg">
+                  <h1
+                    className={`font-bold leading-tight bg-gradient-to-r from-accent-500 via-primary-400 to-accent-600 bg-clip-text text-transparent drop-shadow-lg ${PHRASES[currentPhrase].length > 25 ? 'text-2xl md:text-4xl' : 'text-4xl md:text-5xl'}`}
+                    style={{
+                      zIndex: 20,
+                      position: 'relative',
+                      lineHeight: 1.15,
+                      paddingBottom: '0.2em',
+                    }}
+                  >
                     {PHRASES[currentPhrase]}
                   </h1>
                 </div>

@@ -6,7 +6,7 @@ router = DefaultRouter()
 router.register(r'shipments', ShipmentViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    # Function-based endpoints FIRST!
     path('api/register', register_user, name='register_user'),
     path('api/bookings/', create_booking, name='create_booking'),
     path('api/track_shipment/', track_shipment, name='track_shipment'),
@@ -18,4 +18,6 @@ urlpatterns = [
     path('api/update-shipment-status/', update_shipment_status, name='update_shipment_status'),
     path('api/user-bookings/', user_bookings, name='user_bookings'),
     path('api/contact/', contact_us_api, name='contact_us_api'),
+    # Router LAST
+    path('api/', include(router.urls)),
 ]

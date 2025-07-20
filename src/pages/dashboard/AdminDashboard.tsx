@@ -53,13 +53,11 @@ const AdminDashboard: React.FC = () => {
   // Sort function
   const sortedShipments = [...shipments].sort((a, b) => {
     const key = sortConfig.key as keyof typeof a;
-
-    // Handle undefined or null values
     const valueA = a[key] ?? '';
     const valueB = b[key] ?? '';
 
-    // Handle date comparison
-    if (key === 'createdAt' || key === 'estimatedDelivery' || key === 'deliveryDate') {
+    // Use booking_date and estimated_delivery for sorting
+    if (key === 'booking_date' || key === 'estimated_delivery') {
       const dateA = new Date(valueA as string).getTime();
       const dateB = new Date(valueB as string).getTime();
       return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
@@ -83,7 +81,7 @@ const AdminDashboard: React.FC = () => {
   // Filter function
   const filteredShipments = sortedShipments.filter((shipment) => {
     // Status filter
-    if (statusFilter !== 'all' && shipment.status !== statusFilter) {
+    if (statusFilter !== 'all' && (shipment.status || '').toLowerCase() !== statusFilter.toLowerCase()) {
       return false;
     }
 
@@ -104,12 +102,9 @@ const AdminDashboard: React.FC = () => {
 
   // Format date
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
   };
 
   // Handle sort
@@ -203,20 +198,60 @@ const AdminDashboard: React.FC = () => {
   // Render overview tab
   const renderOverviewTab = () => {
     const totalShipments = shipments.length;
-    const inTransit = shipments.filter((s) => s.status === 'in-transit').length;
-    const delivered = shipments.filter((s) => s.status === 'delivered').length;
-    const pending = shipments.filter((s) => s.status === 'pending').length;
-    const delayed = shipments.filter((s) => s.status === 'delayed').length;
-
-    const inTransitPercent = Math.round((inTransit / totalShipments) * 100);
-    // Removed unused variable 'deliveredPercent'
-    const pendingPercent = Math.round((pending / totalShipments) * 100);
-    const delayedPercent = Math.round((delayed / totalShipments) * 100);
+    const inTransit = shipments.filter((s) => (s.status || '').toLowerCase() === 'in-transit').length;
+    const delivered = shipments.filter((s) => (s.status || '').toLowerCase() === 'delivered').length;
+    const pending = shipments.filter((s) => (s.status || '').toLowerCase() === 'pending').length;
+    const delayed = shipments.filter((s) => (s.status || '').toLowerCase() === 'delayed').length;
 
     return (
       <div>
         <h2 className="text-xl font-semibold mb-6">Dashboard Overview</h2>
-        {/* Add your overview content here */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-primary-100 rounded-full mr-4">
+                <Package className="h-6 w-6 text-primary-600" />
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-500">Active Shipments</div>
+                <div className="text-2xl font-semibold">{inTransit}</div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-green-100 rounded-full mr-4">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-500">Delivered</div>
+                <div className="text-2xl font-semibold">{delivered}</div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-accent-100 rounded-full mr-4">
+                <Clock className="h-6 w-6 text-accent-600" />
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-500">Pending</div>
+                <div className="text-2xl font-semibold">{pending}</div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-red-100 rounded-full mr-4">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-500">Delayed</div>
+                <div className="text-2xl font-semibold">{delayed}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -236,6 +271,7 @@ const AdminDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Est. Delivery</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Type</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
@@ -256,10 +292,11 @@ const AdminDashboard: React.FC = () => {
                         <option value="delayed">Delayed</option>
                       </select>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{shipment.origin}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{shipment.destination}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(shipment.createdAt)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(shipment.estimatedDelivery)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{shipment.from_location || shipment.origin || ''}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{shipment.to_location || shipment.destination || ''}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.booking_date ? formatDate(shipment.booking_date) : ''}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.estimated_delivery ? formatDate(shipment.estimated_delivery) : ''}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.service_type || shipment.service || ''}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         className="bg-primary-600 text-white px-3 py-1 rounded disabled:opacity-50"

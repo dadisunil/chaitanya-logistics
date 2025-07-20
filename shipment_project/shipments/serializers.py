@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Booking, Shipment
 import uuid
+from datetime import timedelta
 
 class AddressSerializer(serializers.Serializer):
     # Allow any values for address fields by making them optional and removing validation constraints
@@ -29,10 +30,19 @@ class BookingSerializer(serializers.ModelSerializer):
     branch_from_phone = serializers.CharField(max_length=15, allow_blank=True, required=False)
     branch_to_phone = serializers.CharField(max_length=15, allow_blank=True, required=False)
     phone = serializers.CharField(max_length=15, required=False)  # Make phone optional
+    estimated_delivery = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
         fields = '__all__'
+        # If you want to explicitly add estimated_delivery:
+        # fields = [ ...all your fields..., 'estimated_delivery']
+
+    def get_estimated_delivery(self, obj):
+        # Example: 3 days after booking_date
+        if obj.booking_date:
+            return (obj.booking_date + timedelta(days=3)).isoformat()
+        return None
 
     def validate_pickup_address(self, value):
         required_fields = ['name', 'address', 'city', 'zip', 'country', 'phone']
@@ -51,11 +61,18 @@ class BookingSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         pickup_address_data = validated_data.pop('pickup_address')
         delivery_address_data = validated_data.pop('delivery_address')
-
-        # Combine nested address data into a single string for storage
-        validated_data['pickup_address'] = f"{pickup_address_data['name']}, {pickup_address_data['address']}, {pickup_address_data['city']}, {pickup_address_data['zip']}, {pickup_address_data['country']}, {pickup_address_data['phone']}, {pickup_address_data.get('email', '')}"
-        validated_data['delivery_address'] = f"{delivery_address_data['name']}, {delivery_address_data['address']}, {delivery_address_data['city']}, {delivery_address_data['zip']}, {delivery_address_data['country']}, {delivery_address_data['phone']}, {delivery_address_data.get('email', '')}"
-
+        # Map pickup_city to from_location
+        validated_data['from_location'] = pickup_address_data.get('city', '')
+        # Map delivery_city to to_location
+        validated_data['to_location'] = delivery_address_data.get('city', '')
+        # Map pickupPhone to branch_from_phone
+        validated_data['branch_from_phone'] = pickup_address_data.get('phone', '')
+        # Map deliveryPhone to branch_to_phone
+        validated_data['branch_to_phone'] = delivery_address_data.get('phone', '')
+        # Map deliveryEmail to delivery_email column
+        validated_data['delivery_email'] = delivery_address_data.get('email', '')
+        validated_data['pickup_address'] = pickup_address_data
+        validated_data['delivery_address'] = delivery_address_data
         return Booking.objects.create(**validated_data)
 
 class ShipmentSerializer(serializers.ModelSerializer):

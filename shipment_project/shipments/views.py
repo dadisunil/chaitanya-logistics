@@ -365,6 +365,7 @@ def register_user(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create_booking(request):
     serializer = BookingSerializer(data=request.data)
     if not serializer.is_valid():
@@ -557,12 +558,13 @@ def insert_booking_from_block(request):
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def update_shipment_status(request):
     try:
-        data = json.loads(request.body)
-        lr_no = data.get('lr_no')
-        new_status = data.get('status')
+        lr_no = request.data.get('lr_no')
+        new_status = request.data.get('status')
         if not lr_no or not new_status:
             return JsonResponse({'error': 'LR No and status are required.'}, status=400)
         booking = Booking.objects.filter(lr_no=lr_no).first()

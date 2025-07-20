@@ -69,6 +69,7 @@ const BookingPage: React.FC = () => {
     pickupCountry: '',
     pickupPhone: '',
     pickupEmail: '',
+    pickupParticular: '', // NEW FIELD
     
     deliveryName: '',
     deliveryAddress: '',
@@ -77,6 +78,7 @@ const BookingPage: React.FC = () => {
     deliveryCountry: '',
     deliveryPhone: '',
     deliveryEmail: '',
+    deliveryParticular: '', // NEW FIELD
     
     // Step 4: Schedule
     pickupDate: '',
@@ -159,6 +161,7 @@ const BookingPage: React.FC = () => {
         country: formData.pickupCountry,
         phone: formData.pickupPhone,
         email: formData.pickupEmail,
+        particular: formData.pickupParticular // NEW FIELD
       },
       delivery_address: {
         name: formData.deliveryName,
@@ -168,10 +171,12 @@ const BookingPage: React.FC = () => {
         country: formData.deliveryCountry,
         phone: formData.deliveryPhone,
         email: formData.deliveryEmail,
+        particular: formData.deliveryParticular // NEW FIELD
       },
       pickup_date: formData.pickupDate,
       pickup_time_window: formData.pickupTimeWindow,
-      payment_method: formData.paymentMethod,
+      payment_method: formData.paymentMethod, // Will be 'credit' or 'cash_on_delivery'
+      status: formData.paymentMethod === 'cash_on_delivery' ? 'Pending' : undefined, // Set status to Pending for CashOnDelivery
     };
 
     try {
@@ -551,6 +556,21 @@ const BookingPage: React.FC = () => {
                   <p className="text-sm text-red-500">Enter a valid email address.</p>
                 )}
               </div>
+
+              <div>
+                <label htmlFor="pickupParticular" className="block text-sm font-medium text-gray-700 mb-1">
+                  Particular (optional)
+                </label>
+                <input
+                  type="text"
+                  id="pickupParticular"
+                  name="pickupParticular"
+                  value={formData.pickupParticular}
+                  onChange={handleInputChange}
+                  className="input w-full"
+                  placeholder="Enter any particular detail for pickup"
+                />
+              </div>
             </div>
           </div>
           
@@ -672,6 +692,21 @@ const BookingPage: React.FC = () => {
                 {!isValidEmail(formData.deliveryEmail) && (
                   <p className="text-sm text-red-500">Enter a valid email address.</p>
                 )}
+              </div>
+
+              <div>
+                <label htmlFor="deliveryParticular" className="block text-sm font-medium text-gray-700 mb-1">
+                  Particular (optional)
+                </label>
+                <input
+                  type="text"
+                  id="deliveryParticular"
+                  name="deliveryParticular"
+                  value={formData.deliveryParticular}
+                  onChange={handleInputChange}
+                  className="input w-full"
+                  placeholder="Enter any particular detail for delivery"
+                />
               </div>
             </div>
           </div>
@@ -848,12 +883,12 @@ const BookingPage: React.FC = () => {
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="paypal"
-                      checked={formData.paymentMethod === 'paypal'}
+                      value="cash_on_delivery"
+                      checked={formData.paymentMethod === 'cash_on_delivery'}
                       onChange={handleInputChange}
                       className="mr-2"
                     />
-                    PayPal
+                    Cash On Delivery
                   </label>
                 </div>
                 
@@ -926,10 +961,10 @@ const BookingPage: React.FC = () => {
                   </div>
                 )}
                 
-                {formData.paymentMethod === 'paypal' && (
+                {formData.paymentMethod === 'cash_on_delivery' && (
                   <div className="bg-blue-50 p-4 rounded-lg mt-4">
                     <p className="text-sm text-blue-700">
-                      You will be redirected to PayPal to complete your payment after submission.
+                      You will pay for your shipment in cash at the time of delivery. Your booking will be marked as <b>Pending</b> until payment is received.
                     </p>
                   </div>
                 )}
