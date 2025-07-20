@@ -21,7 +21,7 @@ __pycache__/
 *.pyc
 
 # Environment files
-#.env
+.env
 #shipment_project/.env
 #src/.env
 
