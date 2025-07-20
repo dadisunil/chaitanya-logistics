@@ -13,6 +13,18 @@ dist-ssr
 *.local
 .terraform/
 
+# Python
+__pycache__/
+*.pyc
+
+# Django migrations
+*.pyc
+
+# Environment files
+#.env
+#shipment_project/.env
+#src/.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
