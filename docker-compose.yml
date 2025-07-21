@@ -11,11 +11,7 @@ services:
     depends_on:
       - db
   frontend:
-    build:
-      context: ./src
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env
+    image: sunilbalu/frontend:latest
     ports:
       - "80:80"
     depends_on:
